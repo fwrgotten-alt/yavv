@@ -1,41 +1,53 @@
--- [[ YAV HUB STABLE ]]
-repeat task.wait() until game:IsLoaded()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local success, library = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/Splix"))()
-end)
-
-if not success then 
-    warn("UI Library failed to load. The link might be down.") 
-    return 
-end
-
-local Window = library:new({
-    name = "/yav hub",
-    color = Color3.fromRGB(255, 255, 255),
-    font = Enum.Font.GothamBold,
-    textsize = 15
+local Window = Rayfield:CreateWindow({
+   Name = "YAV HUB",
+   LoadingTitle = "YAV HUB | Loading...",
+   LoadingSubtitle = "by fwrgotten",
+   ConfigurationSaving = { Enabled = false }
 })
-Window:setkey(Enum.KeyCode.RightControl)
 
-local Main = Window:page({name = "Main"})
-Main:openpage()
+local Main = Window:CreateTab("Main", 4483362458)
 
-local Mov = Main:section({name = "Movement", side = "left", size = 250})
-Mov:toggle({name = "Speed Boost", callback = function(v) _G.SpeedEnabled = v end})
-Mov:slider({name = "Speed", min = 0, max = 10, def = 0.1, callback = function(v) _G.SpeedValue = v end})
+Main:CreateToggle({
+   Name = "Speed Boost",
+   CurrentValue = false,
+   Callback = function(Value)
+       _G.SpeedEnabled = Value
+   end,
+})
 
-local TSB = Main:section({name = "TSB", side = "right", size = 250})
-TSB:toggle({name = "No Dash CD", callback = function(v) workspace:SetAttribute("NoDashCooldown", v) end})
+Main:CreateSlider({
+   Name = "Speed Power",
+   Min = 1,
+   Max = 10,
+   DefaultValue = 1,
+   Callback = function(Value)
+       _G.SpeedValue = Value
+   end,
+})
 
+Main:CreateSection("TSB Exploits")
+
+Main:CreateToggle({
+   Name = "No Dash Cooldown",
+   CurrentValue = false,
+   Callback = function(Value)
+       workspace:SetAttribute("NoDashCooldown", Value)
+   end,
+})
+
+-- The Engine
 game:GetService("RunService").Heartbeat:Connect(function()
-    local char = game.Players.LocalPlayer.Character
-    if _G.SpeedEnabled and char and char:FindFirstChild("HumanoidRootPart") then
-        local hum = char:FindFirstChild("Humanoid")
-        if hum and hum.MoveDirection.Magnitude > 0 then
-            char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame + (hum.MoveDirection * (_G.SpeedValue or 0.1))
+    if _G.SpeedEnabled then
+        local p = game.Players.LocalPlayer
+        local char = p.Character
+        if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") then
+            if char.Humanoid.MoveDirection.Magnitude > 0 then
+                char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame + (char.Humanoid.MoveDirection * (_G.SpeedValue or 1))
+            end
         end
     end
 end)
 
-print("YAV HUB LOADED SUCCESSFULLY")
+Rayfield:Notify({ Title = "Success", Content = "YAV HUB is now active!" })
